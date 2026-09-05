@@ -1,121 +1,122 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { Truck, Navigation, Activity, MapPin } from 'lucide-react'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans">
+      {/* Top Navigation Header */}
+      <header className="bg-white border-b border-slate-200 px-6 py-3.5 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-600 rounded-md text-white">
+              <Truck className="w-5 h-5" />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-slate-900 leading-tight">
+                Truck Route Tracker
+              </h1>
+            </div>
+          </div>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+          {/* Simple Vehicle Info & Status */}
+          <div className="flex items-center gap-4 text-xs font-medium text-slate-600">
+            <span>Vehicle: <strong className="text-slate-900">TRK-104</strong></span>
+          </div>
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      </header>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      {/* Main Dashboard */}
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 flex flex-col lg:flex-row gap-6">
+        {/* Left Section: Map Container */}
+        <section className="flex-1 flex flex-col bg-white rounded-lg border border-slate-200 shadow-xs overflow-hidden min-h-[500px]">
+          {/* Map Header Bar */}
+          <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2 font-semibold text-slate-700">
+              <Navigation className="w-4 h-4 text-slate-500" />
+              <span>Route Map View</span>
+            </div>
+          </div>
+
+          {/* Map Viewport */}
+          <div className="flex-1 bg-slate-100 relative flex items-center justify-center p-6 text-center">
+            <div className="max-w-sm p-4 text-center">
+              <MapPin className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+              <h2 className="text-sm font-semibold text-slate-700">Map Component</h2>
+            </div>
+          </div>
+
+          {/* Controls Bar */}
+          <div className="p-3.5 bg-white border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <button className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs rounded transition-colors cursor-pointer">
+                Start Simulation
+              </button>
+              <button className="px-3.5 py-1.5 bg-white hover:bg-slate-50 text-slate-700 font-medium text-xs rounded border border-slate-300 transition-colors cursor-pointer">
+                Pause
+              </button>
+              <button className="px-3.5 py-1.5 bg-white hover:bg-slate-50 text-slate-700 font-medium text-xs rounded border border-slate-300 transition-colors cursor-pointer">
+                Reset
+              </button>
+            </div>
+
+          </div>
+        </section>
+
+        {/* Right Section: Telemetry & Stop List Sidebar */}
+        <aside className="w-full lg:w-80 flex flex-col gap-4">
+          {/* Tracking Telemetry Card */}
+          <div className="bg-white rounded-lg border border-slate-200 p-4 shadow-xs">
+            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <Activity className="w-3.5 h-3.5 text-slate-500" />
+              Truck Status
+            </h3>
+
+            <div className="space-y-2.5 text-xs">
+              <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                <span className="text-slate-500 font-medium">Current Position</span>
+                <span className="font-semibold text-slate-800">Origin</span>
+              </div>
+              <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                <span className="text-slate-500 font-medium">Distance Covered</span>
+                <span className="font-semibold text-slate-800">0.0 km</span>
+              </div>
+              <div className="flex justify-between items-center py-1 border-b border-slate-100">
+                <span className="text-slate-500 font-medium">Next Stop</span>
+                <span className="font-semibold text-slate-800">Delivery Stop 1</span>
+              </div>
+              <div className="flex justify-between items-center py-1">
+                <span className="text-slate-500 font-medium">Completed</span>
+                <span className="font-semibold text-slate-800">0/3</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Delivery Stop List */}
+          <div className="bg-white rounded-lg border border-slate-200 p-4 shadow-xs flex-1">
+            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-slate-500" />
+              Delivery Progress
+            </h3>
+
+            <div className="divide-y divide-slate-100">
+              {[
+                { name: 'Origin', status: 'Pending', tag: 'O' },
+                { name: 'Delivery Stop 1', status: 'Upcoming', tag: 'D1' },
+                { name: 'Delivery Stop 2', status: 'Upcoming', tag: 'D2' },
+                { name: 'Delivery Stop 3', status: 'Upcoming', tag: 'D3' },
+              ].map((stop, idx) => (
+                <div key={idx} className="py-2.5 flex items-center justify-between first:pt-0 last:pb-0">
+                  <div className="flex items-center gap-2.5">
+                    <div>
+                      <p className="text-xs font-medium text-slate-800">{stop.name}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </aside>
+      </main>
+    </div>
   )
 }
 
