@@ -1,4 +1,5 @@
 import { Truck, Navigation, Activity, MapPin } from 'lucide-react'
+import { RouteMap } from './components/map/RouteMap'
 
 function App() {
   return (
@@ -37,11 +38,8 @@ function App() {
           </div>
 
           {/* Map Viewport */}
-          <div className="flex-1 bg-slate-100 relative flex items-center justify-center p-6 text-center">
-            <div className="max-w-sm p-4 text-center">
-              <MapPin className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-              <h2 className="text-sm font-semibold text-slate-700">Map Component</h2>
-            </div>
+          <div className="flex-1 relative min-h-[450px]">
+            <RouteMap />
           </div>
 
           {/* Controls Bar */}
