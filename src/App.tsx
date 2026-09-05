@@ -1,5 +1,6 @@
 import { Truck, Navigation, Activity, MapPin } from 'lucide-react'
 import { RouteMap } from './components/map/RouteMap'
+import { deliveryRoutePoints } from './data/deliveryRoutes'
 
 function App() {
   return (
@@ -39,7 +40,7 @@ function App() {
 
           {/* Map Viewport */}
           <div className="flex-1 relative min-h-[450px]">
-            <RouteMap />
+            <RouteMap points={deliveryRoutePoints} />
           </div>
 
           {/* Controls Bar */}
@@ -55,7 +56,6 @@ function App() {
                 Reset
               </button>
             </div>
-
           </div>
         </section>
 
@@ -79,7 +79,7 @@ function App() {
               </div>
               <div className="flex justify-between items-center py-1 border-b border-slate-100">
                 <span className="text-slate-500 font-medium">Next Stop</span>
-                <span className="font-semibold text-slate-800">Delivery Stop 1</span>
+                <span className="font-semibold text-slate-800">Anantapur (D1)</span>
               </div>
               <div className="flex justify-between items-center py-1">
                 <span className="text-slate-500 font-medium">Completed</span>
@@ -97,10 +97,10 @@ function App() {
 
             <div className="divide-y divide-slate-100">
               {[
-                { name: 'Origin', status: 'Pending', tag: 'O' },
-                { name: 'Delivery Stop 1', status: 'Upcoming', tag: 'D1' },
-                { name: 'Delivery Stop 2', status: 'Upcoming', tag: 'D2' },
-                { name: 'Delivery Stop 3', status: 'Upcoming', tag: 'D3' },
+                { name: 'Bengaluru (Origin)', status: 'Pending', tag: 'Origin' },
+                { name: 'Anantapur (D1)', status: 'Upcoming', tag: 'D1' },
+                { name: 'Kurnool (D2)', status: 'Upcoming', tag: 'D2' },
+                { name: 'Hyderabad (D3)', status: 'Upcoming', tag: 'D3' },
               ].map((stop, idx) => (
                 <div key={idx} className="py-2.5 flex items-center justify-between first:pt-0 last:pb-0">
                   <div className="flex items-center gap-2.5">
@@ -108,6 +108,7 @@ function App() {
                       <p className="text-xs font-medium text-slate-800">{stop.name}</p>
                     </div>
                   </div>
+                  <span className="text-[11px] text-slate-400 font-mono">{stop.tag}</span>
                 </div>
               ))}
             </div>
