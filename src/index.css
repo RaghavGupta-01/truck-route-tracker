@@ -9,3 +9,14 @@
     color: #1e293b;
   }
 }
+
+/* Leaflet Marker Styling */
+.custom-route-marker,
+.custom-map-marker-container {
+  background: transparent !important;
+  border: none !important;
+}
+
+.leaflet-container {
+  font-family: inherit;
+}

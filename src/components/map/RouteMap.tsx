@@ -1,18 +1,10 @@
 import React, { useEffect } from 'react'
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Tooltip, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-
-import markerIcon from 'leaflet/dist/images/marker-icon.png'
 import type { LocationPoint } from '../../types/route'
 import { deliveryRoutePoints } from '../../data/deliveryRoutes'
-
-const Icon = L.icon({
-  iconUrl: markerIcon,
-  iconSize: [18, 30],
-  iconAnchor: [10, 16],
-})
-L.Marker.prototype.options.icon = Icon
+import { createCustomLocationIcon } from '../../utils/mapIcons'
 
 const MapBoundsController: React.FC<{ points: LocationPoint[] }> = ({ points }) => {
   const map = useMap()
@@ -53,7 +45,14 @@ export const RouteMap: React.FC<RouteMapProps> = ({ points = deliveryRoutePoints
           <Marker
             key={point.id}
             position={[point.latitude, point.longitude]}
-          />
+            icon={createCustomLocationIcon(point)}
+          >
+            <Tooltip direction="right" offset={[15, 0]} opacity={1}>
+              <div className="text-xs font-semibold text-slate-800 font-sans whitespace-nowrap">
+                {point.name}
+              </div>
+            </Tooltip>
+          </Marker>
         ))}
       </MapContainer>
     </div>
