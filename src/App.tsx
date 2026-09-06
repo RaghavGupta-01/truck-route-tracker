@@ -1,8 +1,32 @@
-import { Truck, Navigation, Activity, MapPin } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Truck, Navigation, Activity, MapPin, Loader2, AlertCircle } from 'lucide-react'
 import { RouteMap } from './components/map/RouteMap'
 import { deliveryRoutePoints } from './data/deliveryRoutes'
+import { fetchOSRMRoute } from './services/routingService'
+import type { RouteData } from './types/route'
 
 function App() {
+  const [routeData, setRouteData] = useState<RouteData | null>(null)
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function getRoute() {
+      setLoading(true)
+      setError(null)
+      try {
+        const data = await fetchOSRMRoute(deliveryRoutePoints)
+        setRouteData(data)
+      } catch (err: any) {
+        setError(err?.message || 'Failed to calculate OSRM road route.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    getRoute()
+  }, [])
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans">
       {/* Top Navigation Header */}
@@ -36,11 +60,21 @@ function App() {
               <Navigation className="w-4 h-4 text-slate-500" />
               <span>Route Map View</span>
             </div>
+            {loading && (
+              <span className="flex items-center gap-1.5 text-blue-600 font-medium">
+                <Loader2 className="w-3.5 h-3.5 animate-spin" /> Fetching OSRM road route...
+              </span>
+            )}
+            {error && (
+              <span className="flex items-center gap-1.5 text-amber-600 font-medium">
+                <AlertCircle className="w-3.5 h-3.5" /> Direct Route Fallback
+              </span>
+            )}
           </div>
 
           {/* Map Viewport */}
           <div className="flex-1 relative min-h-[450px]">
-            <RouteMap points={deliveryRoutePoints} />
+            <RouteMap points={deliveryRoutePoints} routeCoordinates={routeData?.coordinates} />
           </div>
 
           {/* Controls Bar */}
@@ -71,11 +105,13 @@ function App() {
             <div className="space-y-2.5 text-xs">
               <div className="flex justify-between items-center py-1 border-b border-slate-100">
                 <span className="text-slate-500 font-medium">Current Position</span>
-                <span className="font-semibold text-slate-800">Origin</span>
+                <span className="font-semibold text-slate-800">Bengaluru (Origin)</span>
               </div>
               <div className="flex justify-between items-center py-1 border-b border-slate-100">
                 <span className="text-slate-500 font-medium">Distance Covered</span>
-                <span className="font-semibold text-slate-800">0.0 km</span>
+                <span className="font-semibold text-slate-800">
+                  0.0 / {routeData ? `${routeData.totalDistanceKm.toFixed(1)} km` : '-- km'}
+                </span>
               </div>
               <div className="flex justify-between items-center py-1 border-b border-slate-100">
                 <span className="text-slate-500 font-medium">Next Stop</span>
