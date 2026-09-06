@@ -1,32 +1,87 @@
-# React + TypeScript + Vite
+# Truck Route Visualizer — Fleet Tracking Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A real-time logistics truck route tracking application built with **React**, **TypeScript**, **Leaflet**, **Tailwind CSS**, and **OSRM (Open Source Routing Machine)**.
 
-Currently, two official plugins are available:
+It simulates a commercial logistics truck traveling along the highway corridor:
+**Bengaluru (Origin) → Anantapur (D1) → Kurnool (D2) → Hyderabad (D3)**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Interactive Route Map**: Implemented with Leaflet and OpenStreetMap tiles with auto-fitting viewport bounds.
+- **Location Markers**: Custom visual pins for Origin (Green) and Delivery Stops D1, D2, D3 (Purple/Indigo) with click-to-view tooltip labels.
+- **OSRM Road Routing**: Fetches actual highway road geometry via OSRM API and renders a clean road polyline.
+- **Session Storage Caching**: Caches fetched OSRM route data in `sessionStorage` to eliminate redundant network calls and rate limits on page reloads.
+- **Modular Component Architecture**:
+  - `Header`: Navigation bar with vehicle identifier badge.
+  - `RouteMap`: Leaflet map viewport, tile layer, polyline, and markers.
+  - `SimulationControls`: Start, Pause, and Reset control bar.
+  - `TruckStatus`: Live telemetry card for position, distance, next stop, and completion stats.
+  - `DeliveryProgress`: Sequential stop progression list.
+  - `useRouteData`: Custom React hook encapsulating OSRM data fetching and caching logic.
 
-## Expanding the Oxlint configuration
+---
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## Tech Stack
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+- **Framework**: React 19 + TypeScript + Vite
+- **Styling**: Tailwind CSS v4
+- **Mapping**: Leaflet + React Leaflet
+- **Icons**: Lucide React
+- **Routing API**: OSRM (Open Source Routing Machine)
+- **Linter**: Oxlint
+
+---
+
+## Getting Started
+
+### 1. Install Dependencies
+```bash
+npm install
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+### 2. Run Development Server
+```bash
+npm run dev
+```
+
+### 3. Build for Production
+```bash
+npm run build
+```
+
+### 4. Run Linter Check
+```bash
+npm run lint
+```
+
+---
+
+## Project Structure
+
+```text
+truck-route-tracker/
+├── src/
+│   ├── components/
+│   │   ├── map/
+│   │   │   └── RouteMap.tsx          # Leaflet map, polyline, and markers
+│   │   ├── Header.tsx                # Top navigation header bar
+│   │   ├── SimulationControls.tsx    # Simulation control buttons
+│   │   ├── TruckStatus.tsx           # Live telemetry status panel
+│   │   └── DeliveryProgress.tsx      # Sequential stop progress checklist
+│   ├── hooks/
+│   │   └── useRouteData.ts           # Route fetching and caching hook
+│   ├── services/
+│   │   └── routingService.ts         # OSRM API integration & sessionStorage cache
+│   ├── data/
+│   │   └── deliveryRoutes.ts         # Predefined location coordinates
+│   ├── utils/
+│   │   └── mapIcons.ts               # Leaflet divIcon marker generators
+│   ├── types/
+│   │   └── route.ts                  # Shared TypeScript interfaces
+│   ├── App.tsx                       # Main dashboard layout orchestrator
+│   └── index.css                     # Tailwind CSS & Leaflet overrides
+├── README.md
+└── package.json
+```
