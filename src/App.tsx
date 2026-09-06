@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react'
 import { Navigation, Loader2, AlertCircle } from 'lucide-react'
 import { Header } from './components/Header'
 import { RouteMap } from './components/map/RouteMap'
@@ -6,30 +5,10 @@ import { SimulationControls } from './components/SimulationControls'
 import { TruckStatus } from './components/TruckStatus'
 import { DeliveryProgress } from './components/DeliveryProgress'
 import { deliveryRoutePoints } from './data/deliveryRoutes'
-import { fetchOSRMRoute } from './services/routingService'
-import type { RouteData } from './types/route'
+import { useRouteData } from './hooks/useRouteData'
 
 function App() {
-  const [routeData, setRouteData] = useState<RouteData | null>(null)
-  const [loading, setLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    async function getRoute() {
-      setLoading(true)
-      setError(null)
-      try {
-        const data = await fetchOSRMRoute(deliveryRoutePoints)
-        setRouteData(data)
-      } catch (err: any) {
-        setError(err?.message || 'Failed to calculate OSRM road route.')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    getRoute()
-  }, [])
+  const { routeData, loading, error } = useRouteData(deliveryRoutePoints)
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans">
