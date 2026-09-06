@@ -5,6 +5,7 @@ import 'leaflet/dist/leaflet.css'
 import type { LocationPoint, RouteCoordinate } from '../../types/route'
 import { deliveryRoutePoints } from '../../data/deliveryRoutes'
 import { createCustomLocationIcon } from '../../utils/mapIcons'
+import { TruckMarker } from './TruckMarker'
 
 const MapBoundsController: React.FC<{ points: LocationPoint[]; routeCoordinates?: RouteCoordinate[] }> = ({
   points,
@@ -28,15 +29,22 @@ const MapBoundsController: React.FC<{ points: LocationPoint[]; routeCoordinates?
 interface RouteMapProps {
   points?: LocationPoint[]
   routeCoordinates?: RouteCoordinate[]
+  truckPosition?: [number, number] | null
+  truckLabel?: string
 }
 
 export const RouteMap: React.FC<RouteMapProps> = ({
   points = deliveryRoutePoints,
   routeCoordinates = [],
+  truckPosition = null,
+  truckLabel = 'TRK-104',
 }) => {
   const centerPosition: [number, number] = [14.6819, 77.6006]
 
   const polylinePositions: [number, number][] = routeCoordinates.map((c) => [c.latitude, c.longitude])
+
+  const activeTruckPosition: [number, number] | null =
+    truckPosition ?? (points.length > 0 ? [points[0].latitude, points[0].longitude] : null)
 
   return (
     <div className="w-full h-full min-h-[450px] relative">
@@ -78,6 +86,8 @@ export const RouteMap: React.FC<RouteMapProps> = ({
             </Tooltip>
           </Marker>
         ))}
+
+        <TruckMarker position={activeTruckPosition} tooltipText={truckLabel} />
       </MapContainer>
     </div>
   )
