@@ -1,0 +1,41 @@
+# Technical Decisions
+
+## 1. Client-Side Rendering
+- **Decision**: Used Client-Side Rendering with React 19 and Vite.
+- **Reason**: The application is highly interactive and browser-dependent. Map rendering, interactive controls, and continuous telemetry displays require client-side execution. SSR/RSC provide limited value for this application and would add unnecessary complexity.
+
+---
+
+## 2. Map Library
+- **Decision**: Used Leaflet with React Leaflet.
+- **Reason**: The application requires an interactive map with markers, polylines, and tooltips. Leaflet provides these capabilities with zero API key billing requirements, low setup complexity, lightweight overhead, and robust raster tile rendering.
+
+---
+
+## 3. Routing Engine
+- **Decision**: Used OSRM (Open Source Routing Machine) with OpenStreetMap highway data.
+- **Reason**: The route should follow actual road geometry rather than a straight line between stops. OSRM provides road-following route geometry coordinates that can be rendered directly on the map.
+
+---
+
+## 4. Single-Request Route Fetching
+- **Decision**: Request the complete Origin → D1 → D2 → D3 route in a single routing request.
+- **Reason**: This provides a continuous route geometry for the map, avoids unnecessary API calls for each segment, and reduces network latency.
+
+---
+
+## 5. Storage & Persistence Caching
+- **Decision**: Persist fetched OSRM route geometry in browser `sessionStorage`.
+- **Reason**: Public OSRM servers enforce strict rate limits (HTTP 429). Caching the parsed route payload by coordinate key eliminates redundant network calls on page reloads, ensuring instant $0\text{ ms}$ load times while offline or re-rendering.
+
+---
+
+## 6. State Management Architecture
+- **Decision**: Used native React state and custom hooks (`useRouteData`) rather than introducing a global state library like Zustand.
+- **Reason**: The application has a single dashboard page with a flat component tree. Encapsulating route data fetching inside custom hooks avoids unneeded library dependencies and maintains simple data flow.
+
+---
+
+## 7. Component Modularization & Separation of Concerns
+- **Decision**: Strictly decoupled UI presentation (`Header`, `TruckStatus`, `DeliveryProgress`, `SimulationControls`), map container (`RouteMap`), data layer (`routingService`), and hook logic (`useRouteData`).
+- **Reason**: Separating concerns ensures clean TypeScript contracts, simplifies testing, prevents component bloat, and strictly adheres to engineering best practices.
