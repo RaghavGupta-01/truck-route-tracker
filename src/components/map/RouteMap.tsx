@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { MapContainer, TileLayer, Marker, Tooltip, Polyline, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -41,7 +41,10 @@ export const RouteMap: React.FC<RouteMapProps> = ({
 }) => {
   const centerPosition: [number, number] = [14.6819, 77.6006]
 
-  const polylinePositions: [number, number][] = routeCoordinates.map((c) => [c.latitude, c.longitude])
+  const polylinePositions: [number, number][] = useMemo(
+    () => routeCoordinates.map((c) => [c.latitude, c.longitude]),
+    [routeCoordinates]
+  )
 
   const activeTruckPosition: [number, number] | null =
     truckPosition ?? (points.length > 0 ? [points[0].latitude, points[0].longitude] : null)

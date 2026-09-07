@@ -7,7 +7,7 @@ interface TruckMarkerProps {
   tooltipText?: string
 }
 
-export const TruckMarker: React.FC<TruckMarkerProps> = ({
+export const TruckMarker = React.memo<TruckMarkerProps>(({
   position,
   tooltipText = 'TRK-104',
 }) => {
@@ -24,4 +24,4 @@ export const TruckMarker: React.FC<TruckMarkerProps> = ({
       )}
     </Marker>
   )
-}
+})

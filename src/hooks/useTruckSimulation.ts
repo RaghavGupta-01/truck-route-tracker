@@ -55,6 +55,7 @@ export function useTruckSimulation({
       cancelAnimationFrame(animFrameRef.current)
       animFrameRef.current = null
     }
+    lastTimeRef.current = null
     distanceRef.current = 0
     queueMicrotask(() => {
       setDistanceCoveredKm(0)
@@ -68,12 +69,22 @@ export function useTruckSimulation({
     if (distanceCoveredKm <= 0) return routeCoordinates[0]
     if (distanceCoveredKm >= totalDistanceKm) return routeCoordinates[routeCoordinates.length - 1]
 
+    // Binary search for polyline segment index
+    let low = 0
+    let high = cumulativeDistances.length - 2
     let segIdx = 0
-    while (
-      segIdx < cumulativeDistances.length - 1 &&
-      cumulativeDistances[segIdx + 1] < distanceCoveredKm
-    ) {
-      segIdx++
+
+    while (low <= high) {
+      const mid = (low + high) >> 1
+      if (cumulativeDistances[mid + 1] <= distanceCoveredKm) {
+        segIdx = mid
+        low = mid + 1
+      } else if (cumulativeDistances[mid] > distanceCoveredKm) {
+        high = mid - 1
+      } else {
+        segIdx = mid
+        break
+      }
     }
 
     if (segIdx >= routeCoordinates.length - 1) {
@@ -100,7 +111,8 @@ export function useTruckSimulation({
         lastTimeRef.current = timestamp
       }
 
-      const deltaTimeSec = (timestamp - lastTimeRef.current) / 1000
+      const rawDeltaTimeSec = (timestamp - lastTimeRef.current) / 1000
+      const deltaTimeSec = Math.min(rawDeltaTimeSec, 0.1) 
       lastTimeRef.current = timestamp
 
       const currentSpeedKmh = baseSpeedKmh * speedMultiplierRef.current
@@ -112,6 +124,7 @@ export function useTruckSimulation({
         setDistanceCoveredKm(totalDistanceKm)
         setStatus('completed')
         lastTimeRef.current = null
+        animFrameRef.current = null
         return
       }
 
@@ -129,6 +142,8 @@ export function useTruckSimulation({
 
   const startSimulation = useCallback(() => {
     if (routeCoordinates.length === 0) return
+    if (animFrameRef.current !== null) return // Prevent duplicate concurrent animation loops
+
     if (status === 'completed') {
       distanceRef.current = 0
       setDistanceCoveredKm(0)
