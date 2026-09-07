@@ -42,21 +42,24 @@ export function useTruckSimulation({
   const lastTimeRef = useRef<number | null>(null)
   const distanceRef = useRef<number>(0)
   const speedMultiplierRef = useRef<number>(speedMultiplier)
+  const animateStepRef = useRef<(timestamp: number) => void>(() => { })
 
   // Sync speedMultiplierRef
   useEffect(() => {
     speedMultiplierRef.current = speedMultiplier
   }, [speedMultiplier])
 
-  // Reset when route coordinates change
+  // Reset state asynchronously when route coordinates change
   useEffect(() => {
     if (animFrameRef.current !== null) {
       cancelAnimationFrame(animFrameRef.current)
       animFrameRef.current = null
     }
     distanceRef.current = 0
-    setDistanceCoveredKm(0)
-    setStatus('ready')
+    queueMicrotask(() => {
+      setDistanceCoveredKm(0)
+      setStatus('ready')
+    })
   }, [routeCoordinates])
 
   // Current position derived from current distance covered
@@ -115,10 +118,14 @@ export function useTruckSimulation({
       distanceRef.current = nextDistance
       setDistanceCoveredKm(nextDistance)
 
-      animFrameRef.current = requestAnimationFrame(animate)
+      animFrameRef.current = requestAnimationFrame((ts) => animateStepRef.current(ts))
     },
     [baseSpeedKmh, totalDistanceKm]
   )
+
+  useEffect(() => {
+    animateStepRef.current = animate
+  }, [animate])
 
   const startSimulation = useCallback(() => {
     if (routeCoordinates.length === 0) return
@@ -128,8 +135,8 @@ export function useTruckSimulation({
     }
     setStatus('in_transit')
     lastTimeRef.current = null
-    animFrameRef.current = requestAnimationFrame(animate)
-  }, [routeCoordinates.length, status, animate])
+    animFrameRef.current = requestAnimationFrame((ts) => animateStepRef.current(ts))
+  }, [routeCoordinates.length, status])
 
   const pauseSimulation = useCallback(() => {
     if (status !== 'in_transit') return
