@@ -90,7 +90,11 @@ function App() {
             completedCount={completedCount}
             totalStops={3}
           />
-          <DeliveryProgress stops={deliveryRoutePoints} />
+          <DeliveryProgress
+            stops={deliveryRoutePoints}
+            completedCount={completedCount}
+            status={status}
+          />
         </aside>
       </main>
     </div>
