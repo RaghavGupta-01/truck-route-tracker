@@ -12,7 +12,11 @@ interface UseTruckSimulationProps {
 interface UseTruckSimulationReturn {
   status: SimulationStatus
   currentPosition: RouteCoordinate | null
+  speedMultiplier: number
   startSimulation: () => void
+  pauseSimulation: () => void
+  resetSimulation: () => void
+  setSpeedMultiplier: (speed: number) => void
 }
 
 export function useTruckSimulation({
@@ -21,6 +25,7 @@ export function useTruckSimulation({
 }: UseTruckSimulationProps): UseTruckSimulationReturn {
   const [status, setStatus] = useState<SimulationStatus>('ready')
   const [distanceCoveredKm, setDistanceCoveredKm] = useState<number>(0)
+  const [speedMultiplier, setSpeedMultiplierState] = useState<number>(1)
 
   // Compute cumulative distances along the route polyline
   const cumulativeDistances = useMemo(() => {
@@ -36,9 +41,19 @@ export function useTruckSimulation({
   const animFrameRef = useRef<number | null>(null)
   const lastTimeRef = useRef<number | null>(null)
   const distanceRef = useRef<number>(0)
+  const speedMultiplierRef = useRef<number>(speedMultiplier)
+
+  // Sync speedMultiplierRef
+  useEffect(() => {
+    speedMultiplierRef.current = speedMultiplier
+  }, [speedMultiplier])
 
   // Reset when route coordinates change
   useEffect(() => {
+    if (animFrameRef.current !== null) {
+      cancelAnimationFrame(animFrameRef.current)
+      animFrameRef.current = null
+    }
     distanceRef.current = 0
     setDistanceCoveredKm(0)
     setStatus('ready')
@@ -85,7 +100,8 @@ export function useTruckSimulation({
       const deltaTimeSec = (timestamp - lastTimeRef.current) / 1000
       lastTimeRef.current = timestamp
 
-      const deltaDistanceKm = (baseSpeedKmh / 3600) * deltaTimeSec
+      const currentSpeedKmh = baseSpeedKmh * speedMultiplierRef.current
+      const deltaDistanceKm = (currentSpeedKmh / 3600) * deltaTimeSec
       const nextDistance = distanceRef.current + deltaDistanceKm
 
       if (nextDistance >= totalDistanceKm && totalDistanceKm > 0) {
@@ -115,6 +131,31 @@ export function useTruckSimulation({
     animFrameRef.current = requestAnimationFrame(animate)
   }, [routeCoordinates.length, status, animate])
 
+  const pauseSimulation = useCallback(() => {
+    if (status !== 'in_transit') return
+    setStatus('paused')
+    if (animFrameRef.current !== null) {
+      cancelAnimationFrame(animFrameRef.current)
+      animFrameRef.current = null
+    }
+    lastTimeRef.current = null
+  }, [status])
+
+  const resetSimulation = useCallback(() => {
+    if (animFrameRef.current !== null) {
+      cancelAnimationFrame(animFrameRef.current)
+      animFrameRef.current = null
+    }
+    lastTimeRef.current = null
+    distanceRef.current = 0
+    setDistanceCoveredKm(0)
+    setStatus('ready')
+  }, [])
+
+  const setSpeedMultiplier = useCallback((speed: number) => {
+    setSpeedMultiplierState(speed)
+  }, [])
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -127,6 +168,10 @@ export function useTruckSimulation({
   return {
     status,
     currentPosition,
+    speedMultiplier,
     startSimulation,
+    pauseSimulation,
+    resetSimulation,
+    setSpeedMultiplier,
   }
 }

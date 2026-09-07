@@ -13,8 +13,12 @@ function App() {
 
   const {
     status,
-    startSimulation,
     currentPosition,
+    speedMultiplier,
+    startSimulation,
+    pauseSimulation,
+    resetSimulation,
+    setSpeedMultiplier,
   } = useTruckSimulation({
     routeCoordinates: routeData?.coordinates ?? [],
   })
@@ -61,8 +65,12 @@ function App() {
 
           {/* Controls Bar */}
           <SimulationControls
-            isStarted={status === 'in_transit'}
+            status={status}
+            speedMultiplier={speedMultiplier}
             onStart={startSimulation}
+            onPause={pauseSimulation}
+            onReset={resetSimulation}
+            onSpeedChange={setSpeedMultiplier}
           />
         </section>
 
