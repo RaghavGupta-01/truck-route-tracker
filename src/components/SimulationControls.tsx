@@ -1,12 +1,14 @@
 import React from 'react'
 
 interface SimulationControlsProps {
+  isStarted?: boolean
   onStart?: () => void
   onPause?: () => void
   onReset?: () => void
 }
 
 export const SimulationControls: React.FC<SimulationControlsProps> = ({
+  isStarted = false,
   onStart,
   onPause,
   onReset,
@@ -16,7 +18,8 @@ export const SimulationControls: React.FC<SimulationControlsProps> = ({
       <div className="flex items-center gap-2">
         <button
           onClick={onStart}
-          className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs rounded transition-colors cursor-pointer"
+          disabled={isStarted}
+          className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium text-xs rounded transition-colors cursor-pointer"
         >
           Start Simulation
         </button>

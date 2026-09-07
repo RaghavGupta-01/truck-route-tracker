@@ -6,9 +6,22 @@ import { TruckStatus } from './components/TruckStatus'
 import { DeliveryProgress } from './components/DeliveryProgress'
 import { deliveryRoutePoints } from './data/deliveryRoutes'
 import { useRouteData } from './hooks/useRouteData'
+import { useTruckSimulation } from './hooks/useTruckSimulation'
 
 function App() {
   const { routeData, loading, error } = useRouteData(deliveryRoutePoints)
+
+  const {
+    status,
+    startSimulation,
+    currentPosition,
+  } = useTruckSimulation({
+    routeCoordinates: routeData?.coordinates ?? [],
+  })
+
+  const truckPosTuple: [number, number] | null = currentPosition
+    ? [currentPosition.latitude, currentPosition.longitude]
+    : null
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans">
@@ -39,11 +52,18 @@ function App() {
 
           {/* Map Viewport */}
           <div className="flex-1 relative min-h-[450px]">
-            <RouteMap points={deliveryRoutePoints} routeCoordinates={routeData?.coordinates} />
+            <RouteMap
+              points={deliveryRoutePoints}
+              routeCoordinates={routeData?.coordinates}
+              truckPosition={truckPosTuple}
+            />
           </div>
 
           {/* Controls Bar */}
-          <SimulationControls />
+          <SimulationControls
+            isStarted={status === 'in_transit'}
+            onStart={startSimulation}
+          />
         </section>
 
         {/* Right Section: Telemetry & Progress Sidebar */}
@@ -64,3 +84,4 @@ function App() {
 }
 
 export default App
+
