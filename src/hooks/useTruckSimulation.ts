@@ -1,17 +1,23 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
-import type { RouteCoordinate } from '../types/route'
-import { computeCumulativeDistances, interpolatePosition } from '../utils/geoUtils'
+import type { LocationPoint, RouteCoordinate } from '../types/route'
+import { computeCumulativeDistances, interpolatePosition, findStopDistances } from '../utils/geoUtils'
 
 export type SimulationStatus = 'ready' | 'in_transit' | 'paused' | 'completed'
 
 interface UseTruckSimulationProps {
   routeCoordinates: RouteCoordinate[]
+  stops?: LocationPoint[]
   baseSpeedKmh?: number
 }
 
 interface UseTruckSimulationReturn {
   status: SimulationStatus
   currentPosition: RouteCoordinate | null
+  distanceCoveredKm: number
+  progressPercent: number
+  currentLocationName: string
+  nextStopName: string
+  completedCount: number
   speedMultiplier: number
   startSimulation: () => void
   pauseSimulation: () => void
@@ -21,6 +27,7 @@ interface UseTruckSimulationReturn {
 
 export function useTruckSimulation({
   routeCoordinates,
+  stops = [],
   baseSpeedKmh = 120,
 }: UseTruckSimulationProps): UseTruckSimulationReturn {
   const [status, setStatus] = useState<SimulationStatus>('ready')
@@ -36,6 +43,11 @@ export function useTruckSimulation({
     if (cumulativeDistances.length === 0) return 0
     return cumulativeDistances[cumulativeDistances.length - 1]
   }, [cumulativeDistances])
+
+  // Compute exact kilometer mark for each delivery stop along the polyline
+  const stopDistances = useMemo(() => {
+    return findStopDistances(stops, routeCoordinates, cumulativeDistances)
+  }, [stops, routeCoordinates, cumulativeDistances])
 
   // Animation frame and timer references
   const animFrameRef = useRef<number | null>(null)
@@ -69,7 +81,6 @@ export function useTruckSimulation({
     if (distanceCoveredKm <= 0) return routeCoordinates[0]
     if (distanceCoveredKm >= totalDistanceKm) return routeCoordinates[routeCoordinates.length - 1]
 
-    // Binary search for polyline segment index
     let low = 0
     let high = cumulativeDistances.length - 2
     let segIdx = 0
@@ -104,6 +115,50 @@ export function useTruckSimulation({
     return interpolatePosition(p1, p2, ratio)
   }, [routeCoordinates, cumulativeDistances, distanceCoveredKm, totalDistanceKm])
 
+  // Telemetry details (current location name, next stop name, completed stop count)
+  const telemetry = useMemo(() => {
+    const defaultOrigin = stops[0]?.name ?? 'Bengaluru (Origin)'
+    const defaultNext = stops[1]?.name ?? 'Anantapur (D1)'
+
+    if (stops.length === 0 || totalDistanceKm <= 0 || stopDistances.length === 0) {
+      return {
+        currentLocationName: defaultOrigin,
+        nextStopName: defaultNext,
+        completedCount: 0,
+      }
+    }
+
+    if (status === 'completed' || distanceCoveredKm >= totalDistanceKm - 0.1) {
+      return {
+        currentLocationName: stops[stops.length - 1]?.name ?? 'Hyderabad (D3)',
+        nextStopName: 'Destination Reached',
+        completedCount: Math.max(0, stops.length - 1),
+      }
+    }
+
+    // Find first stop index where stopDistance > distanceCoveredKm
+    let nextIdx = 1
+    while (nextIdx < stops.length && distanceCoveredKm >= (stopDistances[nextIdx] ?? Infinity)) {
+      nextIdx++
+    }
+
+    const completedCount = Math.max(0, nextIdx - 1)
+    const isAtStop = Math.abs(distanceCoveredKm - (stopDistances[completedCount] ?? 0)) < 0.5
+
+    let currentLocationName = ''
+    if (distanceCoveredKm === 0) {
+      currentLocationName = stops[0]?.name ?? defaultOrigin
+    } else if (isAtStop && completedCount > 0) {
+      currentLocationName = `At ${stops[completedCount]?.name}`
+    } else {
+      currentLocationName = `En Route to ${stops[nextIdx]?.name ?? stops[stops.length - 1]?.name}`
+    }
+
+    const nextStopName = nextIdx < stops.length ? stops[nextIdx]?.name : 'Destination Reached'
+
+    return { currentLocationName, nextStopName, completedCount }
+  }, [distanceCoveredKm, totalDistanceKm, status, stops, stopDistances])
+
   // Animation loop logic
   const animate = useCallback(
     (timestamp: number) => {
@@ -112,7 +167,7 @@ export function useTruckSimulation({
       }
 
       const rawDeltaTimeSec = (timestamp - lastTimeRef.current) / 1000
-      const deltaTimeSec = Math.min(rawDeltaTimeSec, 0.1) 
+      const deltaTimeSec = Math.min(rawDeltaTimeSec, 0.1)
       lastTimeRef.current = timestamp
 
       const currentSpeedKmh = baseSpeedKmh * speedMultiplierRef.current
@@ -142,7 +197,7 @@ export function useTruckSimulation({
 
   const startSimulation = useCallback(() => {
     if (routeCoordinates.length === 0) return
-    if (animFrameRef.current !== null) return // Prevent duplicate concurrent animation loops
+    if (animFrameRef.current !== null) return
 
     if (status === 'completed') {
       distanceRef.current = 0
@@ -187,9 +242,17 @@ export function useTruckSimulation({
     }
   }, [])
 
+  const progressPercent =
+    totalDistanceKm > 0 ? Math.min(100, (distanceCoveredKm / totalDistanceKm) * 100) : 0
+
   return {
     status,
     currentPosition,
+    distanceCoveredKm,
+    progressPercent,
+    currentLocationName: telemetry.currentLocationName,
+    nextStopName: telemetry.nextStopName,
+    completedCount: telemetry.completedCount,
     speedMultiplier,
     startSimulation,
     pauseSimulation,

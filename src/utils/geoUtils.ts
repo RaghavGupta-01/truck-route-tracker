@@ -1,4 +1,4 @@
-import type { RouteCoordinate } from '../types/route'
+import type { LocationPoint, RouteCoordinate } from '../types/route'
 
 /**
  * Calculates the Haversine distance between two GPS coordinates in kilometers.
@@ -57,6 +57,34 @@ export function interpolatePosition(
     latitude: p1.latitude + (p2.latitude - p1.latitude) * clampedRatio,
     longitude: p1.longitude + (p2.longitude - p1.longitude) * clampedRatio,
   }
+}
+
+/**
+ * Maps each stop location to its exact cumulative kilometer mark along the route polyline.
+ */
+export function findStopDistances(
+  stops: LocationPoint[],
+  routeCoordinates: RouteCoordinate[],
+  cumulativeDistances: number[]
+): number[] {
+  if (!stops || stops.length === 0 || !routeCoordinates || routeCoordinates.length === 0) {
+    return []
+  }
+
+  return stops.map((stop) => {
+    let minDist = Infinity
+    let closestIdx = 0
+
+    for (let i = 0; i < routeCoordinates.length; i++) {
+      const d = haversineDistance(stop, routeCoordinates[i])
+      if (d < minDist) {
+        minDist = d
+        closestIdx = i
+      }
+    }
+
+    return cumulativeDistances[closestIdx] ?? 0
+  })
 }
 
 function toRadians(degrees: number): number {

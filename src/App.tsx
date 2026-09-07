@@ -14,6 +14,10 @@ function App() {
   const {
     status,
     currentPosition,
+    distanceCoveredKm,
+    currentLocationName,
+    nextStopName,
+    completedCount,
     speedMultiplier,
     startSimulation,
     pauseSimulation,
@@ -21,6 +25,7 @@ function App() {
     setSpeedMultiplier,
   } = useTruckSimulation({
     routeCoordinates: routeData?.coordinates ?? [],
+    stops: deliveryRoutePoints,
   })
 
   const truckPosTuple: [number, number] | null = currentPosition
@@ -77,11 +82,12 @@ function App() {
         {/* Right Section: Telemetry & Progress Sidebar */}
         <aside className="w-full lg:w-80 flex flex-col gap-4">
           <TruckStatus
-            currentPosition="Bengaluru (Origin)"
-            distanceCoveredKm={0.0}
+            status={status}
+            currentPosition={currentLocationName}
+            distanceCoveredKm={distanceCoveredKm}
             totalDistanceKm={routeData?.totalDistanceKm ?? null}
-            nextStop="Anantapur (D1)"
-            completedCount={0}
+            nextStop={nextStopName}
+            completedCount={completedCount}
             totalStops={3}
           />
           <DeliveryProgress stops={deliveryRoutePoints} />
@@ -92,4 +98,3 @@ function App() {
 }
 
 export default App
-
