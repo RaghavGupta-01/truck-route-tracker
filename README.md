@@ -10,16 +10,19 @@ It simulates a commercial logistics truck traveling along the highway corridor:
 ## Features
 
 - **Interactive Route Map**: Implemented with Leaflet and OpenStreetMap tiles with auto-fitting viewport bounds.
-- **Location Markers**: Custom visual pins for Origin (Green) and Delivery Stops D1, D2, D3 (Purple/Indigo) with click-to-view tooltip labels.
+- **Location Markers**: Custom visual pins for Origin (Green) and Delivery Stops D1, D2, D3 (Indigo) with click-to-view tooltip labels.
 - **OSRM Road Routing**: Fetches actual highway road geometry via OSRM API and renders a clean road polyline.
 - **Session Storage Caching**: Caches fetched OSRM route data in `sessionStorage` to eliminate redundant network calls and rate limits on page reloads.
+- **Truck Movement Simulation**: Smooth 60 FPS animation via `requestAnimationFrame` with Start, Pause, Resume, Reset, and speed multiplier controls (1x, 2x, 4x, 8x, 100x).
+- **Exact Stop Tracking**: Maps each stop location to its exact distance along the OSRM polyline for accurate progress and status updates.
 - **Modular Component Architecture**:
   - `Header`: Navigation bar with vehicle identifier badge.
   - `RouteMap`: Leaflet map viewport, tile layer, polyline, and markers.
-  - `SimulationControls`: Start, Pause, and Reset control bar.
+  - `SimulationControls`: Start, Pause, Reset, and Speed control bar.
   - `TruckStatus`: Live telemetry card for position, distance, next stop, and completion stats.
-  - `DeliveryProgress`: Sequential stop progression list.
+  - `DeliveryProgress`: Sequential stop progression timeline with blue/grey indicators.
   - `useRouteData`: Custom React hook encapsulating OSRM data fetching and caching logic.
+  - `useTruckSimulation`: Custom React hook handling truck movement animation and state.
 
 ---
 
@@ -65,23 +68,27 @@ truck-route-tracker/
 ├── src/
 │   ├── components/
 │   │   ├── map/
-│   │   │   └── RouteMap.tsx          # Leaflet map, polyline, and markers
+│   │   │   ├── RouteMap.tsx          # Leaflet map, polyline, and markers
+│   │   │   └── TruckMarker.tsx       # Truck marker icon
 │   │   ├── Header.tsx                # Top navigation header bar
 │   │   ├── SimulationControls.tsx    # Simulation control buttons
 │   │   ├── TruckStatus.tsx           # Live telemetry status panel
-│   │   └── DeliveryProgress.tsx      # Sequential stop progress checklist
+│   │   └── DeliveryProgress.tsx      # Sequential stop progress timeline
 │   ├── hooks/
-│   │   └── useRouteData.ts           # Route fetching and caching hook
+│   │   ├── useRouteData.ts           # Route fetching and caching hook
+│   │   └── useTruckSimulation.ts     # Truck animation and simulation hook
 │   ├── services/
 │   │   └── routingService.ts         # OSRM API integration & sessionStorage cache
 │   ├── data/
 │   │   └── deliveryRoutes.ts         # Predefined location coordinates
 │   ├── utils/
+│   │   ├── geoUtils.ts               # Geographic distance & interpolation math
 │   │   └── mapIcons.ts               # Leaflet divIcon marker generators
 │   ├── types/
 │   │   └── route.ts                  # Shared TypeScript interfaces
 │   ├── App.tsx                       # Main dashboard layout orchestrator
 │   └── index.css                     # Tailwind CSS & Leaflet overrides
+├── TECHNICAL_DECISIONS.md
 ├── README.md
 └── package.json
 ```

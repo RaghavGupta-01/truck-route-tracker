@@ -8,7 +8,7 @@
 
 ## 2. Map Library
 - **Decision**: Used Leaflet with React Leaflet.
-- **Reason**: The application requires an interactive map with markers, polylines, and tooltips. Leaflet provides these capabilities with zero API key billing requirements, low setup complexity, lightweight overhead, and robust raster tile rendering.
+- **Reason**: The application requires an interactive map with markers, polylines, and tooltips. Leaflet provides these capabilities with zero API key requirements, low setup complexity, lightweight overhead, and robust raster tile rendering.
 
 ---
 
@@ -26,16 +26,28 @@
 
 ## 5. Storage & Persistence Caching
 - **Decision**: Persist fetched OSRM route geometry in browser `sessionStorage`.
-- **Reason**: Public OSRM servers enforce strict rate limits (HTTP 429). Caching the parsed route payload by coordinate key eliminates redundant network calls on page reloads, ensuring instant $0\text{ ms}$ load times while offline or re-rendering.
+- **Reason**: Public OSRM servers enforce strict rate limits (HTTP 429). Caching the parsed route payload by coordinate key eliminates redundant network calls on page reloads, ensuring instant 0 ms load times while offline or re-rendering.
 
 ---
 
 ## 6. State Management Architecture
-- **Decision**: Used native React state and custom hooks (`useRouteData`) rather than introducing a global state library like Zustand.
-- **Reason**: The application has a single dashboard page with a flat component tree. Encapsulating route data fetching inside custom hooks avoids unneeded library dependencies and maintains simple data flow.
+- **Decision**: Used native React state and custom hooks (`useRouteData`, `useTruckSimulation`) rather than introducing a global state library like Zustand.
+- **Reason**: The application has a single dashboard page with a flat component tree. Encapsulating route data fetching and simulation state inside custom hooks maintains simple data flow and avoids unneeded dependencies.
 
 ---
 
 ## 7. Component Modularization & Separation of Concerns
-- **Decision**: Strictly decoupled UI presentation (`Header`, `TruckStatus`, `DeliveryProgress`, `SimulationControls`), map container (`RouteMap`), data layer (`routingService`), and hook logic (`useRouteData`).
-- **Reason**: Separating concerns ensures clean TypeScript contracts, simplifies testing, prevents component bloat, and strictly adheres to engineering best practices.
+- **Decision**: Strictly decoupled UI presentation (`Header`, `TruckStatus`, `DeliveryProgress`, `SimulationControls`), map container (`RouteMap`), data layer (`routingService`), and hook logic (`useRouteData`, `useTruckSimulation`).
+- **Reason**: Separating concerns ensures clean TypeScript contracts, simplifies testing, prevents component bloat, and adheres to clean engineering practices.
+
+---
+
+## 8. Truck Movement Simulation
+- **Decision**: Used `requestAnimationFrame` for a time-based animation loop (`useTruckSimulation`).
+- **Reason**: Smooth 60 FPS animation that is frame-rate independent across different displays, unlike `setInterval` which can cause stutter. Frame deltas are capped to prevent jumps when switching browser tabs.
+
+---
+
+## 9. Stop Detection
+- **Decision**: Track stop completion using cumulative distance along the OSRM route (`findStopDistances`).
+- **Reason**: Maps each stop to its exact kilometer mark along the road polyline, making stop detection accurate instead of relying on fixed ratios or floating-point coordinate equality.
