@@ -88,6 +88,7 @@ truck-route-tracker/
 │   │   └── route.ts                  # Shared TypeScript interfaces
 │   ├── App.tsx                       # Main dashboard layout orchestrator
 │   └── index.css                     # Tailwind CSS & Leaflet overrides
+├── ASSUMPTIONS.md
 ├── TECHNICAL_DECISIONS.md
 ├── README.md
 └── package.json
