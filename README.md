@@ -7,7 +7,9 @@ It simulates a commercial logistics truck traveling along the highway corridor:
 
 ---
 
-> **Live Demo** : https://truck-route-tracker.vercel.app/
+> **Live Demo**: https://truck-route-tracker.vercel.app/
+> 
+> *Tip: The simulation completes in ~82 seconds on **Max** speed.*
 
 ---
 
