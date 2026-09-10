@@ -37,7 +37,7 @@ export const RouteMap: React.FC<RouteMapProps> = ({
   points = deliveryRoutePoints,
   routeCoordinates = [],
   truckPosition = null,
-  truckLabel = 'TRK-104',
+  truckLabel = 'TRK-001',
 }) => {
   const centerPosition: [number, number] = [14.6819, 77.6006]
 

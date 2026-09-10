@@ -10,7 +10,7 @@ interface SimulationControlsProps {
   onSpeedChange?: (speed: number) => void
 }
 
-const SPEED_OPTIONS = [1, 2, 4, 8, 100]
+const SPEED_OPTIONS = [1, 2, 4, 8, 500]
 
 export const SimulationControls: React.FC<SimulationControlsProps> = ({
   status = 'ready',
@@ -66,7 +66,7 @@ export const SimulationControls: React.FC<SimulationControlsProps> = ({
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
               }`}
             >
-              {speed}x
+              {speed === 500 ? 'Max' : `${speed}x`}
             </button>
           )
         })}

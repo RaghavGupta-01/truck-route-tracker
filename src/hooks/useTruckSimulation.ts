@@ -28,7 +28,7 @@ interface UseTruckSimulationReturn {
 export function useTruckSimulation({
   routeCoordinates,
   stops = [],
-  baseSpeedKmh = 120,
+  baseSpeedKmh = 50,
 }: UseTruckSimulationProps): UseTruckSimulationReturn {
   const [status, setStatus] = useState<SimulationStatus>('ready')
   const [distanceCoveredKm, setDistanceCoveredKm] = useState<number>(0)

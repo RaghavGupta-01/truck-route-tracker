@@ -1,4 +1,4 @@
-# Truck Route Visualizer — Fleet Tracking Application
+# Truck Route Visualizer
 
 A real-time logistics truck route tracking application built with **React**, **TypeScript**, **Leaflet**, **Tailwind CSS**, and **OSRM (Open Source Routing Machine)**.
 
@@ -17,7 +17,7 @@ It simulates a commercial logistics truck traveling along the highway corridor:
 - **Location Markers**: Custom visual pins for Origin (Green) and Delivery Stops D1, D2, D3 (Indigo) with click-to-view tooltip labels.
 - **OSRM Road Routing**: Fetches actual highway road geometry via OSRM API and renders a clean road polyline.
 - **Session Storage Caching**: Caches fetched OSRM route data in `sessionStorage` to eliminate redundant network calls and rate limits on page reloads.
-- **Truck Movement Simulation**: Smooth 60 FPS animation via `requestAnimationFrame` with Start, Pause, Resume, Reset, and speed multiplier controls (1x, 2x, 4x, 8x, 100x).
+- **Truck Movement Simulation**: Smooth 60 FPS animation via `requestAnimationFrame` with Start, Pause, Resume, Reset, and speed multiplier controls (1x, 2x, 4x, 8x, Max).
 - **Exact Stop Tracking**: Maps each stop location to its exact distance along the OSRM polyline for accurate progress and status updates.
 - **Modular Component Architecture**:
   - `Header`: Navigation bar with vehicle identifier badge.

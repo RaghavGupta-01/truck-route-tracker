@@ -9,7 +9,7 @@ interface TruckMarkerProps {
 
 export const TruckMarker = React.memo<TruckMarkerProps>(({
   position,
-  tooltipText = 'TRK-104',
+  tooltipText = 'TRK-001',
 }) => {
   if (!position) return null
 

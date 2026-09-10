@@ -12,7 +12,7 @@
 ## Simulation
 - Truck movement is simulated locally.
 - No real GPS data is involved.
-- Average truck speed is assumed to be 120 km/h.
+- Average truck speed is assumed to be 50 km/h.
 
 ## Data
 - Route and vehicle data are mock/static.

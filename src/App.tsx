@@ -35,7 +35,7 @@ function App() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans">
       {/* Header Bar */}
-      <Header vehicleId="TRK-104" />
+      <Header />
 
       {/* Main Dashboard */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 flex flex-col lg:flex-row gap-6">
