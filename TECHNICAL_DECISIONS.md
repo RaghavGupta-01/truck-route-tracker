@@ -51,3 +51,14 @@
 ## 9. Stop Detection
 - **Decision**: Track stop completion using cumulative distance along the OSRM route (`findStopDistances`).
 - **Reason**: Maps each stop to its exact kilometer mark along the road polyline, making stop detection accurate instead of relying on fixed ratios or floating-point coordinate equality.
+
+---
+
+## 10. Distance Normalization & Telemetry Synchronization
+- **Decision**: Normalize the client-side calculated route distance to match the total distance returned by the OSRM API.
+- **Reason**: 
+  - The client calculates distance by summing straight-line segments between GPS coordinates using the Haversine formula, whereas the OSRM backend calculates distance along exact road curves.
+  - This difference creates a minor variance (~573 km vs OSRM's 571.1 km).
+  - Normalizing the cumulative distances ensures the truck simulation, stop milestones, and live telemetry counter (`571.1 / 571.1 km`) remain synchronized without exceeding 100% completion.
+
+

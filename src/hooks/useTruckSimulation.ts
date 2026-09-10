@@ -8,6 +8,7 @@ interface UseTruckSimulationProps {
   routeCoordinates: RouteCoordinate[]
   stops?: LocationPoint[]
   baseSpeedKmh?: number
+  targetTotalDistanceKm?: number
 }
 
 interface UseTruckSimulationReturn {
@@ -29,20 +30,24 @@ export function useTruckSimulation({
   routeCoordinates,
   stops = [],
   baseSpeedKmh = 50,
+  targetTotalDistanceKm,
 }: UseTruckSimulationProps): UseTruckSimulationReturn {
   const [status, setStatus] = useState<SimulationStatus>('ready')
   const [distanceCoveredKm, setDistanceCoveredKm] = useState<number>(0)
   const [speedMultiplier, setSpeedMultiplierState] = useState<number>(1)
 
-  // Compute cumulative distances along the route polyline
+  // Compute cumulative distances along the route polyline (normalized to targetTotalDistanceKm if available)
   const cumulativeDistances = useMemo(() => {
-    return computeCumulativeDistances(routeCoordinates)
-  }, [routeCoordinates])
+    return computeCumulativeDistances(routeCoordinates, targetTotalDistanceKm)
+  }, [routeCoordinates, targetTotalDistanceKm])
 
   const totalDistanceKm = useMemo(() => {
+    if (targetTotalDistanceKm && targetTotalDistanceKm > 0) {
+      return targetTotalDistanceKm
+    }
     if (cumulativeDistances.length === 0) return 0
     return cumulativeDistances[cumulativeDistances.length - 1]
-  }, [cumulativeDistances])
+  }, [cumulativeDistances, targetTotalDistanceKm])
 
   // Compute exact kilometer mark for each delivery stop along the polyline
   const stopDistances = useMemo(() => {

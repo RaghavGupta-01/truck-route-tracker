@@ -26,6 +26,7 @@ function App() {
   } = useTruckSimulation({
     routeCoordinates: routeData?.coordinates ?? [],
     stops: deliveryRoutePoints,
+    targetTotalDistanceKm: routeData?.totalDistanceKm,
   })
 
   const truckPosTuple: [number, number] | null = currentPosition

@@ -26,22 +26,34 @@ export function haversineDistance(
  * Computes an array of cumulative distances along a route coordinate array.
  * cumulativeDistances[0] = 0
  * cumulativeDistances[i] = cumulativeDistances[i-1] + dist(p[i-1], p[i])
+ *
+ * If a targetTotalDistanceKm is provided (e.g. from OSRM API), normalizes
+ * the cumulative distances so that the sum aligns precisely with the routing engine.
  */
 export function computeCumulativeDistances(
-  coordinates: RouteCoordinate[]
+  coordinates: RouteCoordinate[],
+  targetTotalDistanceKm?: number
 ): number[] {
   if (!coordinates || coordinates.length === 0) return [0]
 
-  const cumulative: number[] = [0]
-  let total = 0
+  const rawCumulative: number[] = [0]
+  let rawTotal = 0
 
   for (let i = 1; i < coordinates.length; i++) {
     const dist = haversineDistance(coordinates[i - 1], coordinates[i])
-    total += dist
-    cumulative.push(total)
+    rawTotal += dist
+    rawCumulative.push(rawTotal)
   }
 
-  return cumulative
+  if (targetTotalDistanceKm && targetTotalDistanceKm > 0 && rawTotal > 0) {
+    const scaleFactor = targetTotalDistanceKm / rawTotal
+    return rawCumulative.map((d, index) => {
+      if (index === rawCumulative.length - 1) return targetTotalDistanceKm
+      return d * scaleFactor
+    })
+  }
+
+  return rawCumulative
 }
 
 /**
