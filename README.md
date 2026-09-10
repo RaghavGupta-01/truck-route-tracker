@@ -7,6 +7,10 @@ It simulates a commercial logistics truck traveling along the highway corridor:
 
 ---
 
+> **Live Demo** : https://truck-route-tracker.vercel.app/
+
+---
+
 ## Features
 
 - **Interactive Route Map**: Implemented with Leaflet and OpenStreetMap tiles with auto-fitting viewport bounds.
